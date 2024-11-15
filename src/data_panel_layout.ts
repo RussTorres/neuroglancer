@@ -379,7 +379,7 @@ export class FourPanelLayout extends RefCounted {
               }),
               L.withFlex(1, (element) => {
                 makeSliceViewPanel(
-                  "xz",
+                  "yz",
                   element,
                   sliceViewerStateWithoutScaleBar,
                   false,
@@ -390,6 +390,14 @@ export class FourPanelLayout extends RefCounted {
           L.withFlex(
             1,
             L.box("row", [
+              L.withFlex(1, (element) => {
+                makeSliceViewPanel(
+                  "xz",
+                  element,
+                  sliceViewerStateWithoutScaleBar,
+                  false,
+                );
+              }),
               L.withFlex(1, (element) => {
                 const panel = this.registerDisposer(
                   new PerspectivePanel(
@@ -404,14 +412,6 @@ export class FourPanelLayout extends RefCounted {
                 addDisplayDimensionsWidget(this, panel);
                 addUnconditionalSliceViews(viewer, panel, crossSections);
                 registerRelatedLayouts(this, panel, ["3d"]);
-              }),
-              L.withFlex(1, (element) => {
-                makeSliceViewPanel(
-                  "yz",
-                  element,
-                  sliceViewerStateWithoutScaleBar,
-                  false,
-                );
               }),
             ]),
           ),
