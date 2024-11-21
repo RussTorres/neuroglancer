@@ -9,6 +9,31 @@ import {
 import type { Viewer } from "#src/viewer.js";
 import { makeIcon } from "#src/widget/icon.js";
 
+
+function copyToClipboard(textToCopy) {
+  // navigator clipboard api needs a secure context (https)
+  if (navigator.clipboard && window.isSecureContext) {
+    // navigator clipboard api method'
+    return navigator.clipboard.writeText(textToCopy);
+  } else {
+    // text area method
+    let textArea = document.createElement("textarea");
+    textArea.value = textToCopy;
+    // make the textarea out of viewport
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    return new Promise((res, rej) => {
+      // here the magic happens
+      document.execCommand('copy') ? res() : rej();
+      textArea.remove();
+    });
+  }
+}
+
 type StateServer = {
   url: string;
   default?: boolean;
@@ -100,8 +125,8 @@ export class StateShare extends RefCounted {
             const stateUrlWithoutProtocol = res.substring(
               stateUrlProtcol.length,
             );
-            const link = `${window.location.origin}/#!${protocol}${stateUrlWithoutProtocol}`;
-            navigator.clipboard.writeText(link).then(() => {
+            const link = `${window.location.origin}${window.location.pathname}#!${protocol}${stateUrlWithoutProtocol}`;
+            copyToClipboard(link).then(() => {
               StatusMessage.showTemporaryMessage(
                 "Share link copied to clipboard",
               );
